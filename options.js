@@ -46,7 +46,13 @@ for (const field of globalThis.ashbyExtraFields) {
     input.step = "0.1";
   }
   const equivalents = document.createElement("small");
-  equivalents.textContent = "Matches: " + field.questions.join(" • ");
+  equivalents.textContent =
+    "Matches: " +
+    field.questions.join(" • ") +
+    (field.selectionOptions
+      ? ". Enter one matching option per line: " +
+        field.selectionOptions.join(" • ")
+      : "");
   label.append(input, equivalents);
   $(field.section + "-fields").append(label);
 }
@@ -54,6 +60,14 @@ const allKeys = [
   ...Object.keys(fields),
   ...globalThis.ashbyExtraFields.map((x) => x.key),
 ];
+function profileValue(key, value) {
+  if (key !== "surveyAgeRange") return value || "";
+  return {
+    "18-20": "Under 30",
+    "21-29": "Under 30",
+    "Prefer not to disclose": "I prefer not to answer",
+  }[value] || value || "";
+}
 function addAnswer(question = "", answer = "", aliases = []) {
   const row = document.createElement("div");
   row.className = "answer";
@@ -87,7 +101,7 @@ $("add").onclick = () => addAnswer();
 (async () => {
   try {
     const { profile = {} } = await chrome.storage.local.get("profile");
-    for (const key of allKeys) $(key).value = profile[key] || "";
+    for (const key of allKeys) $(key).value = profileValue(key, profile[key]);
     for (const item of (profile.custom || []).filter((item) => !item.scope))
       addAnswer(item.question, item.answer, item.aliases || []);
   } catch (e) {

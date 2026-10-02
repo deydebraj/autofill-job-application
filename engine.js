@@ -1,6 +1,6 @@
 // Injected only after the user opens the extension and asks to preview.
 (() => {
-  if (globalThis.ashbyHelper?.version === '0.6.0') return;
+  if (globalThis.ashbyHelper?.version === '0.11.0') return;
   const normalize = globalThis.ashbyNormalize;
   const aliases = {
     fullName: ['name', 'full name', 'your name'],
@@ -15,6 +15,12 @@
     company: ['company', 'company name', 'current company', 'current employer'],
     title: ['job title', 'current title', 'current job title', 'current role', 'current position']
   };
+  const equivalentOptions = [
+    ['man', 'male'],
+    ['woman', 'female'],
+    ['i prefer not to answer', 'prefer not to disclose'],
+    ['under 30', '18-20', '21-29']
+  ];
   const extras = globalThis.ashbyExtraFields || [];
   let pending = new Map();
   let previewUrl;
@@ -62,6 +68,31 @@
     const title = group.querySelector(':scope > .ashby-application-form-question-title, :scope > legend');
     return title?.textContent.trim() || group.getAttribute('aria-label') || '';
   }
+  function sameOption(left, right) {
+    const a = normalize(left);
+    const b = normalize(right);
+    return a === b || equivalentOptions.some(group =>
+      group.some(option => normalize(option) === a) &&
+      group.some(option => normalize(option) === b));
+  }
+  function checkboxAnswers(answer, field, options) {
+    const answers = (Array.isArray(answer) ? answer : String(answer || '').split(/[\n;]/))
+      .map(value => String(value).trim())
+      .filter(Boolean);
+    if (!answers.length) return [];
+    const targets = [];
+    for (const value of answers) {
+      const matches = options.filter(option => {
+        const optionLabel = label(option);
+        const aliases = field?.selectionOptionAliases?.[optionLabel] || [];
+        return sameOption(optionLabel, value) ||
+          aliases.some(alias => sameOption(alias, value));
+      });
+      if (matches.length !== 1 || targets.includes(matches[0])) return null;
+      targets.push(matches[0]);
+    }
+    return targets;
+  }
   function radiosIn(group, name) {
     return Array.from(group.querySelectorAll('input[type="radio"]')).filter(el => el.name === name);
   }
@@ -86,6 +117,33 @@
     }
     for (const el of document.querySelectorAll('input, textarea, select, button[role="combobox"]')) {
       if (el.closest('.ashby-application-form-input-yesno')) continue;
+      if (el.type === 'checkbox') {
+        const group = el.closest('.ashby-application-form-input-checkbox-group, fieldset, [role="group"], [role="checkboxgroup"]');
+        if (!group || seenGroups.has(group) || !visible(group)) continue;
+        seenGroups.add(group);
+        const text = groupLabel(group);
+        const field = extras.find(x => x.questions.some(q => normalize(q) === normalize(text)));
+        const options = Array.from(group.querySelectorAll('input[type="checkbox"]'));
+        const answer = answerFor(text, profile);
+        const targets = checkboxAnswers(answer, field, options);
+        const alreadyFilled = options.some(option => option.checked);
+        const reason = !text ? 'Unlabelled checkbox group — complete manually' :
+          alreadyFilled ? 'Already filled — preserved' :
+          !answer ? 'No saved answer' :
+          !targets?.length ? 'No unique matching option' :
+          targets.some(option => option.matches(':disabled')) ? 'Complete manually' : '';
+        const id = crypto.randomUUID();
+        const optional = isOptional(text);
+        rows.push({
+          id, label: text || '(Checkbox group)', answer: reason ? '' : answer,
+          reason, optional, suggestion: reason === 'Complete manually' ? answer : ''
+        });
+        if (!reason) pending.set(id, {
+          kind:'checkbox', group, label:text, options, targets,
+          optionLabels: targets.map(label)
+        });
+        continue;
+      }
       if (el.type === 'radio') {
         const group = el.closest('fieldset, [role="radiogroup"]');
         if (!group || seenGroups.has(group) || !visible(group)) continue;
@@ -93,7 +151,7 @@
         const text = groupLabel(group);
         const options = radiosIn(group, el.name);
         const answer = answerFor(text, profile);
-        const matches = options.filter(o => normalize(label(o)) === normalize(answer));
+        const matches = options.filter(o => sameOption(label(o), answer));
         let reason = !text ? 'Unlabelled radio group — complete manually' :
           options.some(o => o.checked) ? 'Already filled — preserved' :
           !answer ? 'No saved answer' : matches.length !== 1 ? 'No unique matching option' :
@@ -155,6 +213,20 @@
         if (el.checked) filled++; else skipped++;
         continue;
       }
+      if (item.kind === 'checkbox') {
+        const {group, options, targets, optionLabels} = item;
+        const current = Array.from(group.querySelectorAll('input[type="checkbox"]'));
+        if (!group.isConnected || !visible(group) || groupLabel(group) !== item.label ||
+          current.length !== options.length ||
+          current.some((option, index) => option !== options[index] || option.checked) ||
+          targets.some((option, index) =>
+            !option.isConnected || option.matches(':disabled') || label(option) !== optionLabels[index])) {
+          skipped++; continue;
+        }
+        for (const option of targets) option.click();
+        if (targets.every(option => option.checked)) filled++; else skipped++;
+        continue;
+      }
       const {el, value, original} = item;
       if (!el.isConnected || !visible(el) || !supported(el) || el.value !== original || label(el) !== item.label) { skipped++; continue; }
       const proto = el.tagName === 'SELECT' ? HTMLSelectElement.prototype :
@@ -167,5 +239,5 @@
     pending.clear();
     return {filled, skipped};
   }
-  globalThis.ashbyHelper = {version:'0.6.0', scan, fill};
+  globalThis.ashbyHelper = {version:'0.11.0', scan, fill};
 })();

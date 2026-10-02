@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Ashby Application Helper",
-  "version": "0.6.0",
+  "version": "0.11.0",
   "description": "Preview and fill Ashby application fields using your locally saved profile.",
   "host_permissions": ["https://jobs.ashbyhq.com/*"],
   "permissions": ["activeTab", "scripting", "storage"],

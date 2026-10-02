@@ -89,7 +89,9 @@ globalThis.ashbyExtraFields = [
       "Will you now or in the future require sponsorship for employment visa status (e.g., H-1B, O-1, etc.)?",
       "Will you now or in the future require visa sponsorship for employment in the United States of America?",
       "Will you now or in the future require sponsorship to work in the United States?",
-      "Do you now or will you in the future require visa sponsorship?"
+      "Do you now or will you in the future require visa sponsorship?",
+      "Will you now or in the future require sponsorship for employment visa status to work in this location?",
+      "Will you now or in the future require sponsorship for employment visa status?"
     ],
     "options": [
       "Yes",
@@ -172,6 +174,14 @@ globalThis.ashbyExtraFields = [
       "Country",
       "Country of residence",
       "What country do you currently reside in?"
+    ],
+    "section": "common"
+  },
+  {
+    "key": "intendedWorkCountry",
+    "label": "Country you intend to work from",
+    "questions": [
+      "Which country do you intend to work from?"
     ],
     "section": "common"
   },
@@ -272,6 +282,18 @@ globalThis.ashbyExtraFields = [
     "section": "common"
   },
   {
+    "key": "yearsRenewalsManagement",
+    "label": "At least 1-2 years managing a renewals team at a B2B SaaS company",
+    "questions": [
+      "Do you have at least 1-2 years of experience managing a Renewals team at a B2B Saas company?"
+    ],
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "section": "common"
+  },
+  {
     "key": "willingRelocate",
     "label": "Open to relocation (general)",
     "questions": [
@@ -299,34 +321,55 @@ globalThis.ashbyExtraFields = [
     "key": "surveyAgeRange",
     "label": "Optional survey — age range",
     "questions": [
-      "What is your age range?"
+      "What is your age range?",
+      "What is your current age?"
     ],
     "options": [
-      "18-20",
-      "21-29",
+      "Under 30",
       "30-39",
       "40-49",
       "50-59",
       "60 or older",
-      "Prefer not to disclose"
+      "I prefer not to answer"
     ],
     "section": "demographics",
     "optional": true
   },
   {
     "key": "surveyEthnicity",
-    "label": "Optional survey — ethnicity (exact option text)",
+    "label": "Optional survey — ethnicity (one choice per line)",
     "questions": [
-      "What ethnicity do you identify as?"
+      "What ethnicity do you identify as?",
+      "Which ethnicity(ies) do you identify with? Please select all that apply."
     ],
     "section": "demographics",
-    "optional": true
+    "optional": true,
+    "type": "textarea",
+    "selectionOptionAliases": {
+      "Asian or Asian American": ["Asian"],
+      "Black or African American": ["Black", "African American"],
+      "Hispanic or Latine": ["Hispanic or Latino"],
+      "Indigenous or Native American": ["American Indian or Alaska Native"],
+      "Native Hawaiian or Other Pacific Islander": ["Native Hawaiian or Pacific Islander"],
+      "I prefer not to answer": ["Prefer not to disclose", "Decline to self-identify"]
+    },
+    "selectionOptions": [
+      "Asian or Asian American",
+      "Black or African American",
+      "Hispanic or Latine",
+      "Indigenous or Native American",
+      "Native Hawaiian or Other Pacific Islander",
+      "White",
+      "Other",
+      "I prefer not to answer"
+    ]
   },
   {
     "key": "surveyGender",
     "label": "Optional survey — gender identity",
     "questions": [
-      "What gender do you identify as?"
+      "What gender do you identify as?",
+      "What is your gender identity?"
     ],
     "options": [
       "Female",
@@ -381,6 +424,41 @@ globalThis.ashbyExtraFields = [
     "optional": true
   },
   {
+    "key": "surveyCommunities",
+    "label": "Optional survey — communities (one choice per line)",
+    "questions": [
+      "Which of the following communities do you belong to? Please select all that apply."
+    ],
+    "section": "demographics",
+    "optional": true,
+    "type": "textarea",
+    "selectionOptions": [
+      "Person with disability",
+      "Neurodivergent",
+      "Veteran",
+      "Parent",
+      "Refugee or immigrant",
+      "None of the above",
+      "I prefer not to answer"
+    ]
+  },
+  {
+    "key": "highestEducation",
+    "label": "Highest level of education completed",
+    "questions": [
+      "Please share your highest level of education completed"
+    ],
+    "options": [
+      "High school or equivalency diploma",
+      "Technical certificate",
+      "Associate degree",
+      "Bachelor degree",
+      "Masters degree",
+      "Doctorate"
+    ],
+    "section": "common"
+  },
+  {
     "key": "applicationSource",
     "label": "How did you hear about this opportunity?",
     "questions": [
@@ -406,7 +484,35 @@ globalThis.ashbyExtraFields = [
     "questions": [
       "Why are you interested in this role?",
       "What interests you about this position?",
-      "Why are you applying for this position?"
+      "Why are you applying for this position?",
+      "What excites you about the opportunity to join Ashby at this stage in your career?"
+    ],
+    "section": "application",
+    "type": "textarea"
+  },
+  {
+    "key": "applicationCRMs",
+    "label": "CRMs you have experience using",
+    "questions": [
+      "What CRM(s) do you have experience using?"
+    ],
+    "section": "application",
+    "type": "textarea"
+  },
+  {
+    "key": "applicationPeopleDevelopment",
+    "label": "Approach to developing direct reports",
+    "questions": [
+      "In 3-5 sentences, please share what your approach is to helping your direct reports develop new skills?"
+    ],
+    "section": "application",
+    "type": "textarea"
+  },
+  {
+    "key": "applicationDiscountCoaching",
+    "label": "Coaching a discount request",
+    "questions": [
+      "In 3-5 sentences, please describe a time you coached someone through a discount request. How did you approach it, and what was the outcome?"
     ],
     "section": "application",
     "type": "textarea"
@@ -454,6 +560,27 @@ globalThis.ashbyExtraFields = [
       "Desired salary"
     ],
     "section": "application"
+  },
+  {
+    "key": "salaryRangeAlignment",
+    "label": "Does the posted salary or hourly pay range align with your expectations?",
+    "questions": [
+      "Does the posted salary or hourly pay range align with your expectations?"
+    ],
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "section": "application"
+  },
+  {
+    "key": "desiredPayRangeDetails",
+    "label": "Desired pay range and details if the posted range does not align",
+    "questions": [
+      "If the posted salary or hourly range does not align with your expectations, please provide your desired range and any details that would help us to understand your requirements"
+    ],
+    "section": "application",
+    "type": "textarea"
   },
   {
     "key": "onsiteAvailable",
