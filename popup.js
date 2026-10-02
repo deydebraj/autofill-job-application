@@ -1,9 +1,10 @@
 const $ = (id) => document.getElementById(id);
 let tabId;
+let frameId;
 $("profile").onclick = () => chrome.runtime.openOptionsPage();
 async function run(func, args = []) {
   const results = await chrome.scripting.executeScript({
-    target: { tabId },
+    target: { tabId, frameIds: [frameId] },
     func,
     args,
   });
@@ -19,18 +20,56 @@ $("preview").onclick = async () => {
       currentWindow: true,
     });
     const url = new URL(tab.url);
-    if (url.protocol !== "https:" || url.hostname !== "jobs.ashbyhq.com")
+    if (url.protocol !== "https:")
       throw new Error(
-        "Open an application on jobs.ashbyhq.com and select Apply first.",
+        "Open an Ashby application over HTTPS and select Apply first.",
       );
     tabId = tab.id;
+    const directApplication =
+      url.hostname === "jobs.ashbyhq.com" &&
+      url.pathname.split("/").filter(Boolean).at(-1) === "application";
+    const embeddedCareerPage =
+      url.hostname === "www.ashbyhq.com" &&
+      url.pathname === "/careers" &&
+      url.searchParams.has("ashby_jid");
+    if (!directApplication && !embeddedCareerPage)
+      throw new Error(
+        "Open the application on jobs.ashbyhq.com, or open its Ashby careers page and select Apply first.",
+      );
     const { profile } = await chrome.storage.local.get("profile");
     if (!profile)
       throw new Error("Save your profile first using Edit profile.");
     await chrome.scripting.executeScript({
-      target: { tabId },
+      target: embeddedCareerPage ? { tabId, allFrames: true } : { tabId },
       files: ["fields.js", "engine.js"],
     });
+    if (directApplication) {
+      frameId = 0;
+    } else {
+      const frames = await chrome.scripting.executeScript({
+        target: { tabId, allFrames: true },
+        func: () => ({
+          hostname: location.hostname,
+          pathname: location.pathname,
+        }),
+      });
+      const applicationFrame = frames.find(
+        ({ result }) =>
+          result.hostname === "jobs.ashbyhq.com" &&
+          result.pathname.split("/").filter(Boolean).at(-1) === "application",
+      );
+      if (!applicationFrame) {
+        const hasJobFrame = frames.some(
+          ({ result }) => result.hostname === "jobs.ashbyhq.com",
+        );
+        throw new Error(
+          hasJobFrame
+            ? "Select Apply for this job, then preview the application fields."
+            : "The Ashby careers application frame could not be found.",
+        );
+      }
+      frameId = applicationFrame.frameId;
+    }
     const rows = await run(
       (profile) => globalThis.ashbyHelper.scan(profile),
       [profile],

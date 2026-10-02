@@ -1,17 +1,19 @@
 // Injected only after the user opens the extension and asks to preview.
 (() => {
-  if (globalThis.ashbyHelper?.version === '0.5.0') return;
+  if (globalThis.ashbyHelper?.version === '0.6.0') return;
   const normalize = globalThis.ashbyNormalize;
   const aliases = {
     fullName: ['name', 'full name', 'your name'],
-    firstName: ['first name', 'given name'], lastName: ['last name', 'family name', 'surname'],
-    email: ['email', 'email address', 'your email'],
-    phone: ['phone', 'phone number', 'mobile phone', 'mobile number'],
+    firstName: ['first name', 'given name'],
+    lastName: ['last name', 'family name', 'surname'],
+    email: ['email', 'email address', 'e-mail', 'e-mail address', 'your email', 'your email address'],
+    phone: ['phone', 'phone number', 'mobile', 'mobile phone', 'mobile number', 'telephone', 'telephone number'],
     linkedin: ['linkedin', 'linkedin url', 'linkedin profile', 'linkedin profile url'],
     github: ['github', 'github url', 'github profile'],
-    website: ['website', 'personal website', 'portfolio', 'portfolio url', 'website url'],
+    website: ['website', 'website url', 'personal website', 'personal website url', 'portfolio', 'portfolio url'],
     location: ['location', 'current location', 'city', 'city of residence'],
-    company: ['current company', 'current employer'], title: ['current title', 'current job title']
+    company: ['company', 'company name', 'current company', 'current employer'],
+    title: ['job title', 'current title', 'current job title', 'current role', 'current position']
   };
   const extras = globalThis.ashbyExtraFields || [];
   let pending = new Map();
@@ -43,8 +45,8 @@
     if (custom.length > 1) return ''; // Ambiguous mappings need correction.
     const extra = extras.find(x => x.questions.some(q => normalize(q) === key));
     if (extra) return String(profile[extra.key] || '').trim();
-    const field = Object.keys(aliases).find(k => aliases[k].includes(key));
-    if (field === 'fullName') return profile.fullName || [profile.firstName, profile.lastName].filter(Boolean).join(' ');
+    const field = Object.keys(aliases).find(k => aliases[k].some(alias => normalize(alias) === key));
+    if (field === 'fullName') return String(profile.fullName || [profile.firstName, profile.lastName].filter(Boolean).join(' ')).trim();
     return field ? String(profile[field] || '').trim() : '';
   }
   function isOptional(text) {
@@ -165,5 +167,5 @@
     pending.clear();
     return {filled, skipped};
   }
-  globalThis.ashbyHelper = {version:'0.5.0', scan, fill};
+  globalThis.ashbyHelper = {version:'0.6.0', scan, fill};
 })();
