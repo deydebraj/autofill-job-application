@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "Ashby Application Helper",
+  "version": "0.5.0",
+  "description": "Preview and fill Ashby application fields using your locally saved profile.",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "action": { "default_popup": "popup.html", "default_title": "Fill Ashby application" },
+  "options_page": "options.html"
+}

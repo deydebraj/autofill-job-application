@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Your application profile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="options"><span class="badge">APPLICATION HELPER</span>
+    <h1>Your application profile</h1>
+    <p>One reusable profile for job applications. Leave any answer blank to complete it yourself.</p>
+    <form id="form">
+        <h2>Personal details and links</h2>
+        <div id="profile-fields" class="grid"></div>
+        <h2>Common questions</h2>
+        <p>Work authorization, availability, location and experience. Each field lists the equivalent questions it
+            matches.</p>
+        <div id="common-fields" class="grid"></div>
+        <h2>Application answers</h2>
+        <p>Reusable answers for motivation, experience, salary and additional information. Review these before filling
+            each application.</p>
+        <div id="application-fields" class="grid"></div>
+        <h2>Voluntary demographic answers</h2>
+        <p>Optional. Saved answers start unchecked in every preview.</p>
+        <div id="demographics-fields" class="grid"></div>
+        <h2>Other reusable answers</h2>
+        <p>Enter a question and equivalent wording, one variant per line. These answers work across applications.</p>
+        <div id="answers"></div><button type="button" id="add" class="secondary">+ Add answer</button>
+        <div class="actions"><button type="submit">Save profile</button><button type="button" id="clear"
+                class="secondary">Delete saved profile</button></div>
+        <p id="status" role="status" aria-live="polite"></p>
+    </form>
+    <footer>Saved locally in your browser. No AI service, analytics or backend. Filled answers become available to the
+        application website.</footer>
+    <script src="fields.js"></script>
+    <script src="options.js"></script>
+</body>
+
+</html>
