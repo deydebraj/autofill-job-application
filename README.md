@@ -1,6 +1,9 @@
-# Application Helper — version 0.6.0
+# Ashby Job Application Helper — version 0.6.0
 
 A generic Chrome extension for filling common Ashby job application questions from a locally saved profile.
+
+## Demo Video
+https://youtu.be/eoX5LU5WGPA
 
 ## Update an existing installation
 
