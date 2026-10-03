@@ -62,11 +62,15 @@ const allKeys = [
 ];
 function profileValue(key, value) {
   if (key !== "surveyAgeRange") return value || "";
-  return {
-    "18-20": "Under 30",
-    "21-29": "Under 30",
-    "Prefer not to disclose": "I prefer not to answer",
-  }[value] || value || "";
+  return (
+    {
+      "18-20": "Under 30",
+      "21-29": "Under 30",
+      "Prefer not to disclose": "I prefer not to answer",
+    }[value] ||
+    value ||
+    ""
+  );
 }
 function addAnswer(question = "", answer = "", aliases = []) {
   const row = document.createElement("div");

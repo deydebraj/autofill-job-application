@@ -1,8 +1,9 @@
-# Application Helper — version 0.11.0
+# Job Application Helper — version 0.11.0
 
-A generic Chrome extension for filling common Ashby job application questions from a locally saved profile.
+A generic Chrome extension for filling common Ashby and Greeenhouse job application questions from a locally saved profile.
 
 ## Demo Video
+
 https://youtu.be/eoX5LU5WGPA
 
 ## Update an existing installation

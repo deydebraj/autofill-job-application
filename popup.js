@@ -21,7 +21,9 @@ $("preview").onclick = async () => {
     });
     const url = new URL(tab.url);
     if (!["http:", "https:"].includes(url.protocol))
-      throw new Error("Open the application form on a web page and select Apply first.");
+      throw new Error(
+        "Open the application form on a web page and select Apply first.",
+      );
     tabId = tab.id;
     const directApplication =
       url.pathname.split("/").filter(Boolean).at(-1) === "application";
